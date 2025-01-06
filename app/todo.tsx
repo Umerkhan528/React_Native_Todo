@@ -71,14 +71,14 @@ const Todo = () => {
             <TouchableOpacity style={style.buttonContainer} onPress={addTodo}>
                 <Text style={style.buttonText}>Add Todo..</Text>
             </TouchableOpacity>
-            <FlatList style={style.listItem} data={todolist} renderItem={renderTodo} />
+            <FlatList centerContent={true} style={style.listItem} data={todolist} renderItem={renderTodo} />
 
 
-            <Modal visible={visible} onDismiss={hideModal}>
+            <Modal style={style.modalContainer} visible={visible} onDismiss={hideModal}>
                 <View style={style.modalBox}>
                     <TextInput
                         placeholder="Update Todo..."
-                        style={style.inputTextField}
+                        style={style.inputTodoTextField}
                         onChangeText={text => setUpdate(text)}
                         value={updateText}
                     />
@@ -96,7 +96,7 @@ export default Todo;
 const style = StyleSheet.create({
     mainConatiner: {
         padding: 10,
-        backgroundColor: "yellow",
+        backgroundColor: "white",
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
@@ -110,12 +110,19 @@ const style = StyleSheet.create({
         height: 50,
         width: "80%",
     },
+    inputTodoTextField: {
+        fontSize: 14,
+        borderWidth: 1,
+        borderRadius: 7,
+        height: "15%",
+        width: "100%",
+    },
     listItem: {
         fontSize: 14,
-        padding: 10,
+        paddingLeft: 40,
         margin: 10,
         height: 50,
-        width: "95%",
+        width: "100%",
     },
     todoTitle: {
         fontSize: 15,
@@ -157,12 +164,21 @@ const style = StyleSheet.create({
         color: "white",
         fontSize: 14,
     },
+    modalContainer: {
+        backgroundColor: "transparent",
+        flex:1,
+        flexDirection:"column",
+        height:"100%",
+        width:"100%",
+        justifyContent:"center",
+        alignItems:"center"
+    },
     modalBox: {
-        padding:20,
+        padding:5,
         backgroundColor: "white",
-        height: "70%",
-        width: "70%",
         borderRadius:8,
+        width:300,
+        height:"70%",
         justifyContent:"center",
         alignItems:"center"
     }
