@@ -1,18 +1,24 @@
 import { View, Text, TouchableOpacity, TextInput, FlatList, StyleSheet} from "react-native";
 import {IconButton , Modal} from "react-native-paper"
 import { useState } from "react";  
+import { useDispatch, useSelector } from 'react-redux'
+import { addtodo, deletetodo, updatetodo } from "./todoslice";
+import { RootState } from "./todostore";
 
 const Todo = () => {
     const [todoText, setText] = useState("");
     const [updateText, setUpdate] = useState("");
     const [todolist, setList] = useState([]);
     const [visible, setModal] = useState(false);
-    const [currentId, setCurrentId] = useState(null); // Track ID for update
+    const [currentId, setCurrentId] = useState(null);
 
     const showModal = () => setModal(true);
     const hideModal = () => setModal(false);
+    const todoDispatch = useDispatch();
+    const todoSelector =  useSelector((state: RootState)=> state.todo);
 
-    const renderTodo = ({ item }) => {
+    const renderTodo = ({ item ,index }) => {
+        console.log(todoSelector[index])
         return (
             <View style={style.todoItem}>
                 <Text style={style.todoTitle}>{item.title}</Text>
@@ -20,22 +26,24 @@ const Todo = () => {
                     <IconButton
                         icon="delete"
                         iconColor="white"
-                        onPress={() => deleteTodo(item.id)}
+                        onPress={()=> todoDispatch(deletetodo({id: todoSelector[index].id}))}
                     />
                     <IconButton
                         icon="pen"
                         iconColor="white"
-                        onPress={() => updateTodo(item.id, item.title)} 
+                        onPressIn={()=> updateTodo(item.id,item.title)} 
                     />
                 </View>
             </View>
         );
     };
 
-    const addTodo = () => {
+    const addtodolist = () => {
         if (todoText.trim() !== "") {
             setList(prev => [...prev, { title: todoText, id: Date.now() }]);
+            todoDispatch(addtodo({title: todoText}));
             setText("");
+            console.log(todoSelector);
         } else {
             console.log("Plz Enter the text");
         }
@@ -44,21 +52,22 @@ const Todo = () => {
     const updateTodo = (id, text) => {
         setUpdate(text); 
         setCurrentId(id); 
+        console.log("showmodal");
         showModal(); 
     };
 
-    const addUpdateTodo = () => {
-        setList(todolist =>
-            todolist.map(item =>
-                item.id === currentId ? { ...item, title: updateText } : item
-            )
-        );
-        hideModal(); // Hide modal after updating
-    };
+    // const addUpdateTodo = () => {
+    //     setList(todolist =>
+    //         todolist.map(item =>
+    //             item.id === currentId ? { ...item, title: updateText } : item
+    //         )
+    //     );
+    //     hideModal(); // Hide modal after updating
+    // };
 
-    const deleteTodo = id => {
-        setList(todolist => todolist.filter(item => item.id !== id));
-    };
+    // const deleteTodo = id => {
+    //     setList(todolist => todolist.filter(item => item.id !== id));
+    // };
 
     return (
         <View style={style.mainConatiner}>
@@ -68,10 +77,10 @@ const Todo = () => {
                 onChangeText={text => setText(text)}
                 value={todoText}
             />
-            <TouchableOpacity style={style.buttonContainer} onPress={addTodo}>
+            <TouchableOpacity style={style.buttonContainer} onPress={addtodolist}>
                 <Text style={style.buttonText}>Add Todo..</Text>
             </TouchableOpacity>
-            <FlatList centerContent={true} style={style.listItem} data={todolist} renderItem={renderTodo} />
+            <FlatList  centerContent={true} style={style.listItem} data={todoSelector} renderItem={renderTodo}/>
 
 
             <Modal style={style.modalContainer} visible={visible} onDismiss={hideModal}>
@@ -82,7 +91,7 @@ const Todo = () => {
                         onChangeText={text => setUpdate(text)}
                         value={updateText}
                     />
-                    <TouchableOpacity style={style.buttonContainer} onPress={addUpdateTodo}>
+                    <TouchableOpacity style={style.buttonContainer} onPress={()=> {hideModal; todoDispatch(updatetodo({title:updateText,id:currentId}));}}>
                         <Text style={style.buttonText}>Update Todo</Text>
                     </TouchableOpacity>
                 </View>
@@ -182,4 +191,7 @@ const style = StyleSheet.create({
         justifyContent:"center",
         alignItems:"center"
     }
-})
+});
+
+
+
